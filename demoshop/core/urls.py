@@ -1,4 +1,4 @@
-"""demoshop URL Configuration
+"""core URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
@@ -15,7 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from products.views import products_page, FolderView
+from rest_framework.routers import SimpleRouter
+
+router = SimpleRouter()
+
+router.register('api/folders', FolderView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', products_page)
 ]
+
+urlpatterns += router.urls

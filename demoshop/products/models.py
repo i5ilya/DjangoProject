@@ -1,7 +1,8 @@
 from django.db import models
 from treebeard.mp_tree import MP_Node
-# Create your models here.
 
+
+# Create your models here.
 
 
 class Folder(MP_Node):
@@ -16,7 +17,7 @@ class Folder(MP_Node):
 
 class Product(models.Model):
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE)
-    #tarif_item_id = models.IntegerField(unique=True, null=True, blank=True)  # TarifItemID Servio
+    # tarif_item_id = models.IntegerField(unique=True, null=True, blank=True)  # TarifItemID Servio
     name = models.CharField(max_length=200, db_index=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
