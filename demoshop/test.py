@@ -78,13 +78,16 @@ def detour_tree(tree):
 
 
 
-print(tree_raw)
-for it in tree_raw:
-    detour_tree(it)
+# print(tree_raw)
+# for it in tree_raw:
+#     detour_tree(it)
+#
+#
+#
+#
+# for product in products:
+#
+#     print(product.name)
 
-
-
-
-for product in products:
-
-    print(product.name)
+if __name__ == '__main__':
+    create_folder(7777, 'cook', 1, 2)

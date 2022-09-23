@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import slugify
 from treebeard.mp_tree import MP_Node
 
 
@@ -7,7 +8,12 @@ from treebeard.mp_tree import MP_Node
 
 class Folder(MP_Node):
     name = models.CharField(max_length=30)
+    slug = models.SlugField(max_length=200, db_index=True, unique=True, blank=True, null=True)
     node_order_by = ['name']
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(f'{self.id}_{self.name}')
+        super(Folder, self).save(*args, **kwargs)
 
     # def __str__(self):
     #     return 'Folder: {}'.format(self.name)
