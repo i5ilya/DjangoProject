@@ -24,6 +24,7 @@ class Product(models.Model):
     # tarif_item_id = models.IntegerField(unique=True, null=True, blank=True)  # TarifItemID Servio
     name = models.CharField(max_length=200, db_index=True)
     slug = models.SlugField(max_length=200, db_index=True, unique=True, blank=True, null=True)
+    image_file = models.ImageField(upload_to='images/', blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
 
