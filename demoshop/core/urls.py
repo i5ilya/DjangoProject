@@ -26,7 +26,7 @@ router.register('api/folders', FolderView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', all_products),
+    path('', all_products, name='home'),
     path('product/<slug:slug>/', product_detail, name='product_detail'),
     path('folder/<slug:folder_slug>/', folder_list, name='folder_list')
 ]
