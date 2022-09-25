@@ -38,5 +38,9 @@ class Product(models.Model):
     def get_absolute_url(self):
         return reverse('product_detail', args=[self.slug])
 
+    @property
+    def image_url(self):
+        if self.image_file and hasattr(self.image_file, 'url'):
+            return self.image_file.url
     def __str__(self):
         return self.name
