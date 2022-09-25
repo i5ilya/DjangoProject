@@ -17,7 +17,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
-from products.views import all_products, FolderView
+from products.views import all_products, FolderView, product_detail, folder_list
 from rest_framework.routers import SimpleRouter
 
 router = SimpleRouter()
@@ -26,7 +26,9 @@ router.register('api/folders', FolderView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', all_products)
+    path('', all_products),
+    path('product/<slug:slug>/', product_detail, name='product_detail'),
+    path('folder/<slug:folder_slug>/', folder_list, name='folder_list')
 ]
 
 urlpatterns += router.urls

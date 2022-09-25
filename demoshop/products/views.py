@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework.viewsets import ModelViewSet
 
 # Create your views here.
@@ -19,6 +19,17 @@ def all_products(request):
     return render(request, 'home.html', {'products': products})
 
 
-class FolderView(ModelViewSet):
+def product_detail(request, slug):
+    product = get_object_or_404(Product, slug=slug)
+    return render(request, 'product_detail.html', {'product': product})
+
+def folder_list(request, folder_slug):
+    folder = get_object_or_404(Folder, slug=folder_slug)
+    products = Product.objects.filter(folder=folder)
+    return render(request, 'folder.html', {'folder': folder, 'products': products})
+
+
+
+class FolderView(ModelViewSet):  # this for json api
     queryset = Folder.objects.all()
     serializer_class = FolderSerializer

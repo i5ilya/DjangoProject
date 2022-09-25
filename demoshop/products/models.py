@@ -16,6 +16,8 @@ class Folder(MP_Node):
         self.slug = slugify(f'folder-{self.id}')
         super(Folder, self).save(*args, **kwargs)
 
+    def get_absolute_url(self):
+        return reverse('folder_list', args=[self.slug])
     def __str__(self):
         return self.name
 
@@ -34,7 +36,7 @@ class Product(models.Model):
         super(Product, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse()
+        return reverse('product_detail', args=[self.slug])
 
     def __str__(self):
         return self.name
