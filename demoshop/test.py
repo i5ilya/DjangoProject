@@ -10,6 +10,7 @@ from products.models import Product, Folder
 
 all_Folder = Folder.objects.all()
 products = Product.objects.all()
+tree = Folder.get_tree()
 
 diction = {}
 
@@ -54,7 +55,7 @@ def create_product(id, name, folder_id, price):
 # create_product(7231, 'Вино Кагор 150', 7234, 100)
 
 tree_raw = Folder.dump_bulk()
-
+annotated_list = Folder.get_annotated_list()
 
 # branch = Folder.dump_bulk(node_obj)
 # print(all_Folder)
@@ -90,4 +91,6 @@ def detour_tree(tree):
 #     print(product.name)
 
 if __name__ == '__main__':
-    create_folder(7777, 'cook', 1, 2)
+    #create_folder(7777, 'cook', 1, 2)
+    for item in all_Folder:
+        print(item.id)

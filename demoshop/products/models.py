@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.text import slugify
 from treebeard.mp_tree import MP_Node
 
@@ -31,6 +32,9 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(f'product-{self.id}')
         super(Product, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse()
 
     def __str__(self):
         return self.name
