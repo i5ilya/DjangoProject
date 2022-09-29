@@ -8,20 +8,20 @@
     <div class="col-auto">
       {% for item, info in folders %}
     {% if info.open %}
-        <ul><li>
+        <ul><li class="tree">
     {% else %}
         </li><li>
     {% endif %}
     <a href="{{ item.get_absolute_url }}" class="link-dark">
     <i class="bi bi-folder-fill">
-    {{ item }} </i><br/>
+    {{ item | title }} </i><br/>
   </a>
     {% for product in products %}
       {% if product.folder_id == item.id %}
       
       <a href="{{ product.get_absolute_url }}" class="link-dark">
       <i class="bi bi-file-earmark">
-      {{ product.name }} </i><br/>
+      {{ product.name | title }} </i><br/>
     </a>
         
       {% endif %}
