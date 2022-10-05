@@ -92,5 +92,4 @@ def detour_tree(tree):
 
 if __name__ == '__main__':
     #create_folder(7777, 'cook', 1, 2)
-    for item in all_Folder:
-        print(item.id)
+    create_product(268, 'test_beer-2', 7235, 126)
