@@ -26,8 +26,19 @@
   <body class="d-flex flex-column min-vh-100">
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container px-4 px-lg-5">
+      <div class="container">
         <a class="navbar-brand" href="{% url 'home' %}">Servio Demo Shop</a>
+
+        <div class="order-lg-second flex-grow-1 flex-lg-grow-0 text-end">
+          <button class="btn btn d-flex justify-content-center" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar">
+    
+            <span class="navbar-toggler-icon d-flex justify-content-center me-1"></span>
+          
+            <a class="nav-item text-decoration-none link-dark" href="#">MENU</a>
+          </button>
+        </div>
+
+        
         <button class="navbar-toggler"
                 type="button"
                 data-bs-toggle="collapse"
@@ -40,7 +51,11 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'home' %}">Home</a>
+              </li>
+           
+
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#!">About</a>
@@ -56,7 +71,7 @@
                   aria-labelledby="navbarDropdown"
                   style="min-width: 300px;">
                 <li>
-                  <a class="dropdown-item" href="{% url 'home' %}">All Products :</a>
+                  <a class="dropdown-item" href="{% url 'home' %}">All Products</a>
                 </li>
                 <li>
                   <hr class="dropdown-divider" />
@@ -72,15 +87,7 @@
                         {{ item | title }} </i>
                         <br />
                       </a>
-                      {% for product in products %}
-                        {% if product.folder_id == item.id %}
-                          <a href="{{ product.get_absolute_url }}" class="link-dark">
-                            <i class="bi bi-file-earmark">
-                            {{ product.name | title }} </i>
-                            <br />
-                          </a>
-                        {% endif %}
-                      {% endfor %}
+                      
                       {% for close in info.close %}
                       </li>
                     </ul>
@@ -108,6 +115,52 @@
         </div>
       </div>
     </header>
+  
+    
+    {% comment %} <nav class="navbar">
+      <div class="container px-4 px-lg-5"> {% endcomment %}
+        
+      
+        <div class="offcanvas offcanvas-start text-bg-light w-auto" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Servio demo Shop</h5>
+            <button type="button" class="btn-close btn-close-black" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+              {% for item, info in folders %}
+                  {% if info.open %}
+                    <ul>
+                      <li class="tree">{% else %}</li>
+                      <li>
+                      {% endif %}
+                      <a href="{{ item.get_absolute_url }}" class="link-dark">
+                        <i class="bi bi-folder-fill">
+                        {{ item | title }} </i>
+                        <br />
+                      </a>
+                      {% for product in products %}
+                        {% if product.folder_id == item.id %}
+                          <a href="{{ product.get_absolute_url }}" class="link-dark">
+                            <i class="bi bi-file-earmark">
+                            {{ product.name | title }} </i>
+                            <br />
+                          </a>
+                        {% endif %}
+                      {% endfor %}
+                      {% for close in info.close %}
+                      </li>
+                    </ul>
+                  {% endfor %}
+                {% endfor %}
+            </ul>
+          </div>
+        </div>
+      {% comment %} </div>
+    </nav> {% endcomment %}
+
+
+
     <div id="content">
       {% block content %}
       {% endblock content %}
