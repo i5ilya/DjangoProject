@@ -12,15 +12,21 @@
                 <h1 class="display-5 fw-bolder">{{ product.name | title }}</h1>
                 <div class="fs-5 mb-5">
                     {% comment %} <span class="text-decoration-line-through">$45.00</span> {% endcomment %}
-                    <span>₴{{ product.price }}</span>
+                    <p class="price">₴{{ product.price }}</p>
                 </div>
                 <p class="lead">{{ product.description }}</p>
                 <div class="d-flex">
-                    <input class="form-control text-center me-3" id="inputQuantity" type="num" value="1" style="max-width: 3rem">
+                    {% comment %} <input class="form-control text-center me-3" id="inputQuantity" type="num" value="1" style="max-width: 3rem">
                     <button class="btn btn-outline-dark flex-shrink-0" type="button">
                         <i class="bi-cart-fill me-1"></i>
                         Add to cart
-                    </button>
+                    </button> {% endcomment %}
+                    
+                    <form action="{% url 'cart:cart_add' product.id %}" method="post">
+                      {{ cart_product_form }}
+                         {% csrf_token %}
+                     <input type="submit" value="Add to cart">
+                    </form>
                 </div>
             </div>
         </div>

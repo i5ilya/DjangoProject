@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from products.views import all_products, FolderView, product_detail, folder_list
 from rest_framework.routers import SimpleRouter
 
@@ -28,7 +28,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', all_products, name='home'),
     path('product/<slug:slug>/', product_detail, name='product_detail'),
-    path('folder/<slug:folder_slug>/', folder_list, name='folder_list')
+    path('folder/<slug:folder_slug>/', folder_list, name='folder_list'),
+    path('cart/', include('cart.urls', namespace='cart')),
 ]
 
 urlpatterns += router.urls

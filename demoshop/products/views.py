@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework.viewsets import ModelViewSet
-
+from cart.forms import CartAddProductForm
 # Create your views here.
 from products.models import Folder
 from products.models import Product
@@ -16,12 +16,14 @@ def folders(request):
 def all_products(request):
     products = Product.objects.all()
     # context = {'tree': tree, 'products': products, 'tree1': tree1}
+
     return render(request, 'home.html', {'products': products})
 
 
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug)
-    return render(request, 'product_detail.html', {'product': product})
+    cart_product_form = CartAddProductForm()
+    return render(request, 'product_detail.html', {'product': product, 'cart_product_form': cart_product_form})
 
 
 def folder_list(request, folder_slug):
