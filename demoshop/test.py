@@ -1,12 +1,19 @@
 import os
 from typing import Any
 
+
+from django.shortcuts import render
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 import django
+django.setup()
+from django.contrib.sessions.models import Session
 
 django.setup()
 from django.core.management import call_command
 from products.models import Product, Folder
+from cart.cart import Cart
+
+
 
 all_Folder = Folder.objects.all()
 products = Product.objects.all()
@@ -92,4 +99,8 @@ def detour_tree(tree):
 
 if __name__ == '__main__':
     #create_folder(7777, 'cook', 1, 2)
-    create_product(268, 'test_beer-2', 7235, 126)
+    #create_product(268, 'test_beer-2', 7235, 126)
+    s = Session.objects.get(pk = '6q6rmhorut193osucpgnzecoouiku10x')
+    print(s.get_decoded())
+    # cart = Cart('first')
+    # cart.add(product=2)

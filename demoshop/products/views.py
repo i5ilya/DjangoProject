@@ -23,11 +23,11 @@ def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug)
     return render(request, 'product_detail.html', {'product': product})
 
+
 def folder_list(request, folder_slug):
     folder = get_object_or_404(Folder, slug=folder_slug)
     products = Product.objects.filter(folder=folder)
     return render(request, 'folder.html', {'folder': folder, 'products': products})
-
 
 
 class FolderView(ModelViewSet):  # this for json api
