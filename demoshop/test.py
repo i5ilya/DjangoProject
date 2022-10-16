@@ -104,3 +104,4 @@ if __name__ == '__main__':
     print(s.get_decoded())
     # cart = Cart('first')
     # cart.add(product=2)
+    

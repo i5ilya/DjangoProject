@@ -8,7 +8,8 @@
 
 {% block content %}
 
-
+<section class="py-2">
+    <div class="container">
 <h1>Your shopping cart</h1>
     <table class="cart">
         <thead>
@@ -27,7 +28,7 @@
                 <tr>
                     <td>
                         <a href="{{ product.get_absolute_url }}">
-                            <img class="card-img-top img-fluid" src="{{ product.image_url | default_if_none:'#' }}" alt="no image"  style="height:10%; width:10%"/>
+                            <img class="card-img-top img-fluid" src="{{ product.image_url | default_if_none:'#' }}" alt="no image"  style="height:15%; width:15%"/>
                         </a>
                     </td>
                     <td>{{ product.name }}</td>
@@ -41,7 +42,7 @@
         <tr class="total">
             <td>Total</td>
             <td colspan="4"></td>
-            <td class="num">${{ cart.get_total_price }}</td>
+            <td class="num">₴{{ cart.get_total_price }}</td>
         </tr>
         </tbody>
     </table>
@@ -49,7 +50,8 @@
         <a href="{% url "home" %}" class="button light">Continue shopping</a>
         <a href="#" class="button">Checkout</a>
     </p>
-
+</div>
+</section>
 
 
 {% endblock content %}
