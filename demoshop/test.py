@@ -7,7 +7,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 import django
 django.setup()
 from django.contrib.sessions.models import Session
-
+from django.conf import settings
 django.setup()
 from django.core.management import call_command
 from products.models import Product, Folder
@@ -102,6 +102,5 @@ if __name__ == '__main__':
     #create_product(268, 'test_beer-2', 7235, 126)
     s = Session.objects.get(pk = '6q6rmhorut193osucpgnzecoouiku10x')
     print(s.get_decoded())
-    # cart = Cart('first')
-    # cart.add(product=2)
-    
+
+
