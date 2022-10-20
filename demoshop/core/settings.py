@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'treebeard',
     'products',
     'cart',
+    'orders',
 ]
 
 MIDDLEWARE = [
