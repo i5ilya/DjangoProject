@@ -30,6 +30,7 @@ urlpatterns = [
     path('product/<slug:slug>/', product_detail, name='product_detail'),
     path('folder/<slug:folder_slug>/', folder_list, name='folder_list'),
     path('cart/', include('cart.urls', namespace='cart')),
+    path('orders/', include('orders.urls', namespace='orders'))
 ]
 
 urlpatterns += router.urls

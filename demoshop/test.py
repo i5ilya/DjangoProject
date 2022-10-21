@@ -12,12 +12,14 @@ django.setup()
 from django.core.management import call_command
 from products.models import Product, Folder
 from cart.cart import Cart
-
+from orders.models import Order, OrderItem
 
 
 all_Folder = Folder.objects.all()
 products = Product.objects.all()
 tree = Folder.get_tree()
+
+all_orders = Order.objects.all()
 
 diction = {}
 
@@ -102,5 +104,7 @@ if __name__ == '__main__':
     #create_product(268, 'test_beer-2', 7235, 126)
     s = Session.objects.get(pk = '6q6rmhorut193osucpgnzecoouiku10x')
     print(s.get_decoded())
-
+    for item in all_orders:
+        total = item.get_total_cost()
+        print(total)
 
