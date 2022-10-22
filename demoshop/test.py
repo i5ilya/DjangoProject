@@ -1,7 +1,9 @@
 import os
 from typing import Any
+from urllib.parse import urlparse
 
-
+import requests
+from django.core.files.base import ContentFile
 from django.shortcuts import render
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 import django
@@ -16,14 +18,14 @@ from orders.models import Order, OrderItem
 
 
 all_Folder = Folder.objects.all()
-products = Product.objects.all()
+all_products = Product.objects.all()
 tree = Folder.get_tree()
 
 all_orders = Order.objects.all()
 
 diction = {}
 
-for items in products:
+for items in all_products:
     diction[items.folder_id] = items.name
 
 
@@ -49,7 +51,7 @@ def create_folder(id, name, parent_id, depth):
         get_name(parent_id).add_child(id=id, name=name, depth=depth)  # в остальных случаях создаем папки в иерархии
 
 
-def create_product(id, name, folder_id, price):
+def create_product(id, name, folder_id, price, image='images/default.jpg'):
     '''
     :param id: "ID" Servio
     :param name: "Name" Servio
@@ -57,7 +59,7 @@ def create_product(id, name, folder_id, price):
     :param price: "Price" Servio
     :return: do writing new product in DB
     '''
-    new_product = Product(id=id, folder=Folder.objects.get(id=folder_id), name=name, price=price)
+    new_product = Product(id=id, folder=Folder.objects.get(id=folder_id), name=name, price=price, image_file=image)
     new_product.save()
 
 
@@ -88,23 +90,46 @@ def detour_tree(tree):
 
 
 
-# print(tree_raw)
-# for it in tree_raw:
-#     detour_tree(it)
-#
-#
-#
-#
-# for product in products:
-#
-#     print(product.name)
+def get_remote_image(some_url):
+    response = requests.get(some_url)
+    file_name = urlparse(some_url).path.split('/')[-1]
+    if response.status_code == 200:
+        return file_name, response.content
+
+
+
+
 
 if __name__ == '__main__':
     #create_folder(7777, 'cook', 1, 2)
     #create_product(268, 'test_beer-2', 7235, 126)
-    s = Session.objects.get(pk = '6q6rmhorut193osucpgnzecoouiku10x')
-    print(s.get_decoded())
-    for item in all_orders:
-        total = item.get_total_cost()
-        print(total)
 
+
+    # s = Session.objects.get(pk = '6q6rmhorut193osucpgnzecoouiku10x')
+    # print(s.get_decoded())
+    # for item in all_orders:
+    #     total = item.get_total_cost()
+    #     print(total)
+
+    products_json = []
+
+    for item in all_products:
+        #print(item.id, item.name, item.folder.id, item.price, item.image_file)
+        products_json.append({
+            'product.id' : item.id,
+            'product.name' : item.name,
+            'product.folder.id' : item.folder.id,
+            'product.price' : item.price,
+            'product_image' : item.image_file.url
+
+        })
+    print(products_json)
+    beer = Product.objects.get(name='test_beer-22')
+    beer.image_file = 'images/photo-1608270586620-248524c67de9.jpg'
+
+    url = 'https://i.imgur.com/inn42BF.jpeg'
+    response = requests.get('https://i.imgur.com/9ByhOFK.jpeg')
+    file_name = urlparse(url).path.split('/')[-1]
+    print(file_name)
+    beer.image_file.save(file_name, ContentFile(response.content), save=True)
+    print(beer.image_file.url)
