@@ -1,21 +1,20 @@
 import os
-from typing import Any
 from urllib.parse import urlparse
-
+from collections import Counter
 import requests
-from django.core.files.base import ContentFile
-from django.shortcuts import render
+from django.core.files.base import ContentFile, File
+from django.utils import timezone
+from requests import Request, Session
+
+from core import settings
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 import django
-django.setup()
-from django.contrib.sessions.models import Session
-from django.conf import settings
-django.setup()
-from django.core.management import call_command
-from products.models import Product, Folder
-from cart.cart import Cart
-from orders.models import Order, OrderItem
 
+django.setup()
+django.setup()
+from products.models import Product, Folder
+from orders.models import Order
 
 all_Folder = Folder.objects.all()
 all_products = Product.objects.all()
@@ -37,7 +36,7 @@ def get_id(name):
     return Folder.objects.get(name=name)
 
 
-def create_folder(id, name, parent_id, depth):
+def create_folder(id, name, numchild, parent_id, depth):
     '''
     :param id: "ID" servio
     :param name: "Name" servio
@@ -48,7 +47,7 @@ def create_folder(id, name, parent_id, depth):
     if parent_id == 0 and depth == 1:  # в сервио parentid == 0 - это корневая папка и глубина ее == 1
         pass  # должна быть создана в БД с кодом сервио и мы ее не обрабатываем
     else:
-        get_name(parent_id).add_child(id=id, name=name, depth=depth)  # в остальных случаях создаем папки в иерархии
+        get_name(parent_id).add_child(id=id, name=name, numchild=numchild, depth=depth)  # в остальных случаях создаем папки в иерархии
 
 
 def create_product(id, name, folder_id, price, image='images/default.jpg'):
@@ -67,6 +66,7 @@ def create_product(id, name, folder_id, price, image='images/default.jpg'):
 
 tree_raw = Folder.dump_bulk()
 annotated_list = Folder.get_annotated_list()
+
 
 # branch = Folder.dump_bulk(node_obj)
 # print(all_Folder)
@@ -89,21 +89,28 @@ def detour_tree(tree):
     # print((tree['data'])['name'])
 
 
-
-def get_remote_image(some_url):
+def get_and_set_remote_image(some_url, product_id):
+    '''
+    Скачиваем и устанавливаем картинку как файл
+    '''
     response = requests.get(some_url)
     file_name = urlparse(some_url).path.split('/')[-1]
+    product = Product.objects.get(id=product_id)
     if response.status_code == 200:
-        return file_name, response.content
+        return product.image_file.save(file_name, ContentFile(response.content), save=True)
 
+
+def set_image_file(path_file, product_id):
+    product = Product.objects.get(id=product_id)
+    product.image_file.name = path_file
+    product.save()
 
 
 
 
 if __name__ == '__main__':
-    #create_folder(7777, 'cook', 1, 2)
-    #create_product(268, 'test_beer-2', 7235, 126)
-
+    # create_folder(7777, 'cook', 1, 2)
+    # create_product(268, 'test_beer-2', 7235, 126)
 
     # s = Session.objects.get(pk = '6q6rmhorut193osucpgnzecoouiku10x')
     # print(s.get_decoded())
@@ -114,22 +121,44 @@ if __name__ == '__main__':
     products_json = []
 
     for item in all_products:
-        #print(item.id, item.name, item.folder.id, item.price, item.image_file)
+        # print(item.id, item.name, item.folder.id, item.price, item.image_file)
         products_json.append({
-            'product.id' : item.id,
-            'product.name' : item.name,
-            'product.folder.id' : item.folder.id,
-            'product.price' : item.price,
-            'product_image' : item.image_file.url
+            'id': item.id,
+            'name': item.name,
+            'folder.id': item.folder.id,
+            'price': float(item.price),
+            'product_image': item.image_file.url.replace('/media/', '')
 
         })
-    print(products_json)
-    beer = Product.objects.get(name='test_beer-22')
-    beer.image_file = 'images/photo-1608270586620-248524c67de9.jpg'
 
-    url = 'https://i.imgur.com/inn42BF.jpeg'
-    response = requests.get('https://i.imgur.com/9ByhOFK.jpeg')
-    file_name = urlparse(url).path.split('/')[-1]
-    print(file_name)
-    beer.image_file.save(file_name, ContentFile(response.content), save=True)
-    print(beer.image_file.url)
+    products_json = {'products' : products_json}
+
+    url_auth = "https://17.servio.support/29099/POSExternal/Authenticate"
+    url_tarifitems = 'https://17.servio.support/29099/POSExternal/Get_TarifItems'
+    data = {
+            "CardCode" : "777",
+            "TermID" : "ANDROID"
+            }
+    response = requests.post(url_auth, json=data)
+    #r = requests.post(url=URL, params=PARAMS)
+    print("Status Code", response.status_code)
+    data_response = response.json()
+    token = data_response['Token']
+    print(token)
+    response_tarifitems = requests.post(url_tarifitems, headers={"accesstoken": token})
+    data_response_tarifitems = response_tarifitems.json()
+
+    print(data_response_tarifitems['Items'])
+    folder_parent_ids = []
+    for item in data_response_tarifitems['Items']:
+        if item['ParentID'] != 0:
+            folder_parent_ids.append(item['ParentID'])
+
+    count = Counter(folder_parent_ids) # количество повторений 'ParentID' во всем списке
+
+    for item in data_response_tarifitems['Items']:
+        print(item['ID'])
+        print(item['Name'])
+        print(count[item['ID']])
+        print(item['ParentID'])
+        print(item['HierarchyLevel'])
