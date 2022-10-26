@@ -36,7 +36,7 @@ def get_id(name):
     return Folder.objects.get(name=name)
 
 
-def create_folder(id, name, numchild, parent_id, depth):
+def create_folder_old(id, name, depth, numchild, parent_id):
     '''
     :param id: "ID" servio
     :param name: "Name" servio
@@ -47,7 +47,28 @@ def create_folder(id, name, numchild, parent_id, depth):
     if parent_id == 0 and depth == 1:  # в сервио parentid == 0 - это корневая папка и глубина ее == 1
         pass  # должна быть создана в БД с кодом сервио и мы ее не обрабатываем
     else:
-        get_name(parent_id).add_child(id=id, name=name, numchild=numchild, depth=depth)  # в остальных случаях создаем папки в иерархии
+        get_name(parent_id).add_child(id=id, name=name, depth=depth, numchild=numchild)  # в остальных случаях создаем папки в иерархии
+
+def create_folder(id, name, parent_id):
+    '''
+    :param id: "ID" servio
+    :param name: "Name" servio
+    :param parentid: "ParentID" - root folder
+    :param depth: "HierarchyLevel"  == 1 for MENU (identical for Django DB)
+    :return: do writing folders in DB
+    '''
+    if parent_id == 0:  # в сервио parentid == 0 - это корневая папка и глубина ее == 1
+        pass  # должна быть создана в БД с кодом сервио и мы ее не обрабатываем
+    else:
+        get_name(parent_id).add_sibling(id=id, name=name)  # в остальных случаях создаем папки в иерархии
+
+
+def move_folder(id, parent_id):
+    '''
+    id - кого перемещаем
+    parent_id - папка родитель куда перемещаем.
+    '''
+    get_name(id).move(get_name(parent_id), 'sorted-child')
 
 
 def create_product(id, name, folder_id, price, image='images/default.jpg'):
@@ -132,7 +153,7 @@ if __name__ == '__main__':
         })
 
     products_json = {'products' : products_json}
-
+    #print(products_json)
     url_auth = "https://17.servio.support/29099/POSExternal/Authenticate"
     url_tarifitems = 'https://17.servio.support/29099/POSExternal/Get_TarifItems'
     data = {
@@ -162,3 +183,5 @@ if __name__ == '__main__':
         print(count[item['ID']])
         print(item['ParentID'])
         print(item['HierarchyLevel'])
+
+    move_folder(7270, 1)
