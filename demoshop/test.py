@@ -12,7 +12,6 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 import django
 
 django.setup()
-django.setup()
 from products.models import Product, Folder
 from orders.models import Order
 
@@ -57,10 +56,10 @@ def create_folder(id, name, parent_id):
     :param depth: "HierarchyLevel"  == 1 for MENU (identical for Django DB)
     :return: do writing folders in DB
     '''
-    if parent_id == 0:  # в сервио parentid == 0 - это корневая папка и глубина ее == 1
+    if parent_id == 0:  # в сервио parentid == 0 - это корневая папка
         pass  # должна быть создана в БД с кодом сервио и мы ее не обрабатываем
     else:
-        get_name(parent_id).add_sibling(id=id, name=name)  # в остальных случаях создаем папки в иерархии
+        Folder.objects.get(id=parent_id).add_child(id=id, name=name)  # в остальных случаях создаем папки в иерархии
 
 
 def move_folder(id, parent_id):
@@ -68,7 +67,7 @@ def move_folder(id, parent_id):
     id - кого перемещаем
     parent_id - папка родитель куда перемещаем.
     '''
-    get_name(id).move(get_name(parent_id), 'sorted-child')
+    Folder.objects.get(id=id).move(Folder.objects.get(parent_id), 'sorted-child')
 
 
 def create_product(id, name, folder_id, price, image='images/default.jpg'):
@@ -83,19 +82,9 @@ def create_product(id, name, folder_id, price, image='images/default.jpg'):
     new_product.save()
 
 
-# create_product(7231, 'Вино Кагор 150', 7234, 100)
-
-tree_raw = Folder.dump_bulk()
-annotated_list = Folder.get_annotated_list()
 
 
-# branch = Folder.dump_bulk(node_obj)
-# print(all_Folder)
 
-# create_folder(1, 'меню', 0, 1)
-
-# (get_name(2).add_child(name='Wine'))  # добавить папочку в подпапку get_name(2)
-# (get_name(2).add_child(name='Wine', id=345))  # добавить папочку в подпапку get_name(2)
 def detour_tree(tree):
     print((tree['data'])['name'])
     tree_id = tree['id']
@@ -153,7 +142,7 @@ if __name__ == '__main__':
         })
 
     products_json = {'products' : products_json}
-    #print(products_json)
+    print(products_json)
     url_auth = "https://17.servio.support/29099/POSExternal/Authenticate"
     url_tarifitems = 'https://17.servio.support/29099/POSExternal/Get_TarifItems'
     data = {
@@ -170,18 +159,12 @@ if __name__ == '__main__':
     data_response_tarifitems = response_tarifitems.json()
 
     print(data_response_tarifitems['Items'])
-    folder_parent_ids = []
-    for item in data_response_tarifitems['Items']:
-        if item['ParentID'] != 0:
-            folder_parent_ids.append(item['ParentID'])
 
-    count = Counter(folder_parent_ids) # количество повторений 'ParentID' во всем списке
 
     for item in data_response_tarifitems['Items']:
         print(item['ID'])
         print(item['Name'])
-        print(count[item['ID']])
         print(item['ParentID'])
-        print(item['HierarchyLevel'])
 
-    move_folder(7270, 1)
+
+    #move_folder(7270, 1)
