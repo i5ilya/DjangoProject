@@ -119,7 +119,7 @@ def set_image_file(path_file, product_id):
 
 
 if __name__ == '__main__':
-    # create_folder(7777, 'cook', 1, 2)
+    # create_folder(7777, 'cook', 4626)
     # create_product(268, 'test_beer-2', 7235, 126)
 
     # s = Session.objects.get(pk = '6q6rmhorut193osucpgnzecoouiku10x')
@@ -142,29 +142,10 @@ if __name__ == '__main__':
         })
 
     products_json = {'products' : products_json}
-    print(products_json)
-    url_auth = "https://17.servio.support/29099/POSExternal/Authenticate"
-    url_tarifitems = 'https://17.servio.support/29099/POSExternal/Get_TarifItems'
-    data = {
-            "CardCode" : "777",
-            "TermID" : "ANDROID"
-            }
-    response = requests.post(url_auth, json=data)
-    #r = requests.post(url=URL, params=PARAMS)
-    print("Status Code", response.status_code)
-    data_response = response.json()
-    token = data_response['Token']
-    print(token)
-    response_tarifitems = requests.post(url_tarifitems, headers={"accesstoken": token})
-    data_response_tarifitems = response_tarifitems.json()
+    #print(products_json)
 
-    print(data_response_tarifitems['Items'])
-
-
-    for item in data_response_tarifitems['Items']:
-        print(item['ID'])
-        print(item['Name'])
-        print(item['ParentID'])
 
 
     #move_folder(7270, 1)
+    instance = Folder.objects.get(id=7270)
+    instance.delete()
