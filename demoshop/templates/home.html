@@ -1,60 +1,65 @@
 {% extends "./base.html" %}
 {% load static %}
-
 {% block content %}
-
-<section class="py-2">
-  <div class="container">
-    <div class="row row-cols-1 row-cols-xs-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-4 g-3 my-1 justify-content-center">
-      {% for product in products %}
-      <div class="col">
-        <div class="card h-100">
-          <!-- Sale badge-->
-          <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>
-          <!-- Product image-->
-          <img class="card-img-top img-fluid img-responsive mx-auto d-block" src="{{ product.image_url | default_if_none:'#' }}" alt="no image"  style="height:100%; width:100%"/>
-          <!-- Product details-->
-          <div class="card-body">
-            <div class="text-center">
-              <!-- Product name-->
-              <h5 class="fw-bolder">{{ product.name | title }}</h5>
-              <!-- Product reviews-->
-              <div class="d-flex justify-content-center small text-warning mb-2">
-                <div class="bi-star-fill"></div>
-                <div class="bi-star-fill"></div>
-                <div class="bi-star-fill"></div>
-                <div class="bi-star-fill"></div>
-                <div class="bi-star-fill"></div>
+  <section class="py-2">
+    <div class="container">
+      <div class="row row-cols-1 row-cols-xs-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-4 g-3 my-1 justify-content-center">
+        {% for product in products %}
+          <div class="col">
+            <div class="card h-100">
+              <!-- Sale badge-->
+              <div class="badge bg-dark text-white position-absolute"
+                   style="top: 0.5rem; right: 0.5rem">Sale</div>
+              <!-- Product image-->
+              <div class="img-container">
+                <img class="card-img-top img-fluid img-responsive mx-auto d-block"
+                     src="{{ product.image_url | default_if_none:'#' }}"
+                     alt="no image"
+                     style="height:100%; width:100%"/>
               </div>
-              <!-- Product price-->
-              <!-- <span class="text-muted text-decoration-line-through">$20.00</span> -->
-              ₴{{ product.price }}
+              <!-- Product details-->
+              <div class="card-body align-items-end d-flex justify-content-center">
+                <div class="text-center">
+                  <!-- Product name-->
+                  <p class="fw-bolder card-text mb-1 card-title align-self-start">{{ product.name | title }}</p>
+                  {% comment %} <h5 class="fw-bolder">{{ product.name | title }}</h5> {% endcomment %}
+                  <!-- Product reviews-->
+                  
+                  <div class="d-flex justify-content-center small text-warning mb-2">
+                    <div class="bi-star-fill"></div>
+                    <div class="bi-star-fill"></div>
+                    <div class="bi-star-fill"></div>
+                    <div class="bi-star-fill"></div>
+                    <div class="bi-star-fill"></div>
+                  </div>
+                  <!-- Product price-->
+                  <!-- <span class="text-muted text-decoration-line-through">$20.00</span> -->
+                  ₴{{ product.price }}
+                
+                </div>
+              </div>
+              <!-- Product actions-->
+              <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                <div class="container">
+                  <div class="row justify-content-around">
+                    <div class="col p-1 col-auto align-self-center">
+                      <div class="text-center">
+                        <a class="btn btn-outline-dark mt-auto m-1" href="#">Add To Cart</a>
+                      </div>
+                    </div>
+                    <div class="col p-1 col-auto align-self-center">
+                      <div class="text-center">
+                        <a class="btn btn-outline-dark mt-auto m-1"
+                           href="{{ product.get_absolute_url }}">Details</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <!-- Product actions-->
-
-          <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-            <div class="container">
-            <div class="row justify-content-around">
-              <div class="col p-1 col-auto align-self-center">
-                <div class="text-center"><a class="btn btn-outline-dark mt-auto m-1" href="#">Add To Cart</a></div>
-              </div>
-              <div class="col p-1 col-auto align-self-center">
-                <div class="text-center"><a class="btn btn-outline-dark mt-auto m-1" href="{{ product.get_absolute_url }}">Details</a></div>
-              </div>
-            </div>
-          </div>
-        </div>
+        {% endfor %}
       </div>
     </div>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-
-
-
-
-
-
+  </section>
 {% endblock content %}
