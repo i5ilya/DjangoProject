@@ -185,7 +185,30 @@ class Syncing(Connection):
         product.save()
 
 
+    def find_deleted_servio_products_ids(self):
+        print(self.ids_servio_products)
+        print(self.ids_site_products)
+        deleted_folders = self.ids_site_products - self.ids_servio_products
+
+        if len(deleted_folders) != 0:
+            print(deleted_folders)
+            return deleted_folders
+        return False
+
+    def delete_products(self, products_ids:set):
+        '''
+        products_ids - set of ids.
+        '''
+        if products_ids:
+            for item in products_ids:
+                instance = Product.objects.get(id=item)
+                instance.delete()
+
     def sync_products(self):
+        find_deleted_servio_products_ids = self.find_deleted_servio_products_ids()
+        if find_deleted_servio_products_ids:
+            self.delete_products(find_deleted_servio_products_ids)
+
         for item in self.servio_products:
             if item['ParentID'] in self.ids_site_folders:
                 self.create_product(item['ID'], item['Name'], item['ParentID'], item['Price'])
@@ -228,3 +251,4 @@ if __name__ == '__main__':
     #Folder.objects.get(id=1).add_sibling('sorted-sibling', instance=new_node)
     sync.sync_folders()
     sync.sync_products()
+    #sync.find_deleted_servio_products_ids()
