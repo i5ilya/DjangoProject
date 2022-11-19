@@ -1,8 +1,10 @@
 # need fo run this file
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
-import django
-django.setup()
+#
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
+# import django
+#
+# django.setup()
 
 # need and working with django native
 from servio.models import Servio
@@ -10,10 +12,12 @@ from django.utils import timezone
 import requests
 from django.utils.datetime_safe import datetime
 from products.models import Folder, Product
-from typing import *
 from urllib.parse import urlparse
 from django.core.files.base import ContentFile
+from django.conf import settings
+from django.core.management import BaseCommand
 
+from abc import ABC
 
 class Connection():
     def __init__(self, s_id):
@@ -41,6 +45,7 @@ class Connection():
                     if data_response.get('Success') is not None:  # Если в словаре есть ключ
                         if not data_response['Success']:  # Если этот ключ не True
                             print(data_response['Error'])
+                            return data_response['Error']
                     else:
                         self.servio.token = data_response['Token']
                         self.token = self.servio.token
@@ -52,6 +57,7 @@ class Connection():
                         self.servio.save()
             except Exception as error:
                 print(f"The error '{error}' occurred")
+                return error
 
     def get_tarifitems(self):
         self.auth()
@@ -67,7 +73,6 @@ class Connection():
         except Exception as error:
             print(f"The error {error} occurred")
 
-
     def get_tarifitem(self):
         self.auth()
         try:
@@ -82,6 +87,7 @@ class Connection():
         except Exception as error:
             print(f"The error {error} occurred")
 
+
 class Syncing(Connection):
     def __init__(self, s_id):
         super().__init__(s_id)
@@ -93,7 +99,6 @@ class Syncing(Connection):
             self.ids_servio_folders = {item["ID"] for item in self.servio_folders}
         self.ids_site_folders = {item.id for item in self.folders}
 
-
         # Product part
         self.products = Product.objects.all()
         if self.get_tarifitem():
@@ -101,30 +106,37 @@ class Syncing(Connection):
             self.ids_servio_products = {item["ID"] for item in self.servio_products}
             self.parent_ids_servio_products = {item['ParentID'] for item in self.servio_products}
         self.ids_site_products = {item.id for item in self.products}
+
     # start folder part ------------------------------------------------------------------------------------------
     def exist_root_folder(self):
-        for element in self.ids_site_folders:
-            if element in self.root_folder_id_in_servio and Folder.objects.get(id=element).depth == 1:
-                return True
-        return False
-
+        try:
+            for element in self.ids_site_folders:
+                if element in self.root_folder_id_in_servio and Folder.objects.get(id=element).depth == 1:
+                    return True
+            return False
+        except Exception as error:
+            print(f"The error '{error}' occurred")
     def fix_tree(self):
         Folder.objects.get(id=self.root_folder_id_in_servio[0]).fix_tree()
-    def find_deleted_servio_folders_ids(self):
-        print(self.ids_servio_folders)
-        print(self.ids_site_folders)
-        deleted_folders = self.ids_site_folders - self.ids_servio_folders
 
-        if len(deleted_folders) != 0:
-            print(deleted_folders)
-            return deleted_folders
-        return False
+    def find_deleted_servio_folders_ids(self):
+        try:
+            print(self.ids_servio_folders)
+            print(self.ids_site_folders)
+            deleted_folders = self.ids_site_folders - self.ids_servio_folders
+
+            if len(deleted_folders) != 0:
+                print(deleted_folders)
+                return deleted_folders
+            return False
+        except Exception as error:
+            print(f"The error '{error}' occurred")
 
     def create_folder(self, id, name, parent_id):
         '''
         :param id: "ID" servio
         :param name: "Name" servio
-        :param parentid: "ParentID" - root folder
+        :param parent_id: "ParentID" - root folder
         :param depth: "HierarchyLevel"  == 1 for MENU (identical for Django DB)
         :return: do writing folders in DB
         '''
@@ -133,7 +145,7 @@ class Syncing(Connection):
         else:
             Folder.objects.get(id=parent_id).add_child(id=id, name=name)  # в остальных случаях создаем папки в иерархии
 
-    def delete_folders(self, folders_ids:set):
+    def delete_folders(self, folders_ids: set):
         '''
         forders_ids - set of ids.
         '''
@@ -150,7 +162,7 @@ class Syncing(Connection):
 
         if self.exist_root_folder():
             for item in self.servio_folders:
-                if item['ParentID'] in self.ids_site_folders:
+                if item['ParentID'] in self.ids_site_folders and self.servio_folders:
                     self.create_folder(item['ID'], item['Name'], item['ParentID'])
                     self.fix_tree()
         self.folders = Folder.objects.all()
@@ -184,18 +196,20 @@ class Syncing(Connection):
         product.image_file.name = path_file
         product.save()
 
-
     def find_deleted_servio_products_ids(self):
-        print(self.ids_servio_products)
-        print(self.ids_site_products)
-        deleted_folders = self.ids_site_products - self.ids_servio_products
+        try:
+            print(self.ids_servio_products)
+            print(self.ids_site_products)
+            deleted_folders = self.ids_site_products - self.ids_servio_products
 
-        if len(deleted_folders) != 0:
-            print(deleted_folders)
-            return deleted_folders
-        return False
+            if len(deleted_folders) != 0:
+                print(deleted_folders)
+                return deleted_folders
+            return False
 
-    def delete_products(self, products_ids:set):
+        except Exception as error:
+            print(f"The error '{error}' occurred")
+    def delete_products(self, products_ids: set):
         '''
         products_ids - set of ids.
         '''
@@ -205,19 +219,54 @@ class Syncing(Connection):
                 instance.delete()
 
     def sync_products(self):
-        find_deleted_servio_products_ids = self.find_deleted_servio_products_ids()
-        if find_deleted_servio_products_ids:
-            self.delete_products(find_deleted_servio_products_ids)
+        try:
+            find_deleted_servio_products_ids = self.find_deleted_servio_products_ids()
+            if find_deleted_servio_products_ids:
+                self.delete_products(find_deleted_servio_products_ids)
 
-        for item in self.servio_products:
-            if item['ParentID'] in self.ids_site_folders:
-                self.create_product(item['ID'], item['Name'], item['ParentID'], item['Price'])
-                if item['PhotoUrl']:
-                    self.get_and_set_remote_image(item['PhotoUrl'], item['ID'])
+            for item in self.servio_products:
+                if item['ParentID'] in self.ids_site_folders:
+                    self.create_product(item['ID'], item['Name'], item['ParentID'], item['Price'])
+                    if item['PhotoUrl']:
+                        self.get_and_set_remote_image(item['PhotoUrl'], item['ID'])
+            command = Command()
+            command.delete_files()
+        except Exception as error:
+            print(f"The error '{error}' occurred")
+
+class Command(BaseCommand, ABC):
+    def __init__(self):
+        super().__init__()
+        self.physical_files = set()
+        self.db_files = set()
+        self.media_root = getattr(settings, 'MEDIA_ROOT', None)
+        for relative_root, dirs, files in os.walk(self.media_root):
+            self.relative_root = relative_root
+            self.dirs = dirs
+            self.files = files
+
+    def get_files_db(self):
+        for item in Product.objects.all():
+            self.db_files.add(os.path.join(item.image_file.url.replace('/media/images/', '')))
+        return self.db_files
+
+    def get_files_fs(self):
+        if self.media_root is not None:
+            for file in self.files:
+                self.physical_files.add(file)
+        return self.physical_files
+
+    def delete_files(self):
+        self.get_files_fs()
+        self.get_files_db()
+        delete_files = self.physical_files - self.db_files
+        if delete_files:
+            for file in delete_files:
+                os.remove(os.path.normpath(os.path.join(self.relative_root, file)))
 
 
 if __name__ == '__main__':
-    #s = Connection(1)
+    # s = Connection(1)
 
     # print(s.updated)
     print(f'Сейчас {timezone.localtime(timezone.now())}')  # конвертация в localtime
@@ -237,18 +286,23 @@ if __name__ == '__main__':
     #     print(item['Price'])
     #     print(item['PhotoUrl'])
 
-    sync = Syncing(1)
+    #sync = Syncing(1)
 
-    #print(f'Токен валидный до  {timezone.localtime(sync.token_valid)}')
-    #sync.sync_folders()
+    # print(f'Токен валидный до  {timezone.localtime(sync.token_valid)}')
+    # sync.sync_folders()
     # sync.deleted_servio_folders()
-    #sync.delete_folders({7234})
-    #sync.find_deleted_servio_folders()
-    #sync.create_folder(1, 'test', 4626)
-    #print(Folder.objects.get(id=4626).find_problems())
-    #Folder.objects.get(id=4626).fix_tree()
-    #new_node = Folder(name='root2')
-    #Folder.objects.get(id=1).add_sibling('sorted-sibling', instance=new_node)
-    sync.sync_folders()
-    sync.sync_products()
+    # sync.delete_folders({7234})
+    # sync.find_deleted_servio_folders()
+    # sync.create_folder(1, 'test', 4626)
+    # print(Folder.objects.get(id=4626).find_problems())
+    # Folder.objects.get(id=4626).fix_tree()
+    # new_node = Folder(name='root2')
+    # Folder.objects.get(id=1).add_sibling('sorted-sibling', instance=new_node)
+    #sync.sync_folders()
+    #sync.sync_products()
     #sync.find_deleted_servio_products_ids()
+    # cleanup.refresh(Product.objects.get(id=7247))
+    #command = Command()
+    #print(command.get_files_db())
+    #print(command.get_files_fs())
+    #command.delete_files()
