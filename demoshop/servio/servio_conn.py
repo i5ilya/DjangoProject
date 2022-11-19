@@ -121,12 +121,8 @@ class Syncing(Connection):
 
     def find_deleted_servio_folders_ids(self):
         try:
-            print(self.ids_servio_folders)
-            print(self.ids_site_folders)
             deleted_folders = self.ids_site_folders - self.ids_servio_folders
-
             if len(deleted_folders) != 0:
-                print(deleted_folders)
                 return deleted_folders
             return False
         except Exception as error:
@@ -198,12 +194,9 @@ class Syncing(Connection):
 
     def find_deleted_servio_products_ids(self):
         try:
-            print(self.ids_servio_products)
-            print(self.ids_site_products)
             deleted_folders = self.ids_site_products - self.ids_servio_products
 
             if len(deleted_folders) != 0:
-                print(deleted_folders)
                 return deleted_folders
             return False
 
