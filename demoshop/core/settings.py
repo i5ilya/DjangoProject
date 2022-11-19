@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'cart',
     'orders',
     'servio',
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 MIDDLEWARE = [
