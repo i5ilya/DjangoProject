@@ -1,9 +1,9 @@
 # need fo run this file
 import os
-#
+
 # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 # import django
-#
+# #
 # django.setup()
 
 # need and working with django native
@@ -72,7 +72,7 @@ class Connection():
                 return data_response['Items']
         except Exception as error:
             print(f"The error {error} occurred")
-
+            return error
     def get_tarifitem(self):
         self.auth()
         try:
@@ -86,8 +86,7 @@ class Connection():
                 return data_response['Item']
         except Exception as error:
             print(f"The error {error} occurred")
-
-
+            return error
 class Syncing(Connection):
     def __init__(self, s_id):
         super().__init__(s_id)
@@ -260,7 +259,9 @@ class Command(BaseCommand, ABC):
 
 if __name__ == '__main__':
     # s = Connection(1)
-
+    # con = Connection(1)
+    # con.auth()
+    # con.get_tarifitems()
     # print(s.updated)
     print(f'Сейчас {timezone.localtime(timezone.now())}')  # конвертация в localtime
     # print(timezone.now())

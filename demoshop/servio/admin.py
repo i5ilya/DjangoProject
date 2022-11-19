@@ -15,11 +15,17 @@ class ServioAdmin(admin.ModelAdmin):
     def servio_sync(self, request, queryset):
         updated = 0
         for obj in queryset:
-            sync = Syncing(obj.id)
+            con = Connection(obj.id)
+
             updated += 1
-            if sync.auth():
-                messages.error(request, sync.auth())
+            auth_answer = con.auth()
+            if auth_answer:
+                messages.error(request, auth_answer)
+            tarifitems_answer = con.get_tarifitems()
+            if tarifitems_answer:
+                messages.error(request, tarifitems_answer)
             else:
+                sync = Syncing(obj.id)
                 sync.sync_folders()
                 sync.sync_products()
                 # self.message_user(request, ngettext(
