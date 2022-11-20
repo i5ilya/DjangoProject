@@ -3,7 +3,7 @@
 
 {% block title %}
     Your shopping cart
-{% endblock %}
+{% endblock title %}
 
 
 {% block content %}
@@ -67,8 +67,8 @@
         </tbody>
     </table>
     <p class="text-right">
-      <a href="{% url "home" %}" class="button light">Continue shopping</a>
-      <a href="{% url "orders:order_create" %}" class="button">Checkout</a>
+      <a href="{% url "home" %}" class="btn btn-light border-dark">Continue shopping</a>
+      <a href="{% url "orders:order_create" %}" class="btn btn-dark btn-lg border-dark">Checkout</a>
     </p>
 </div>
 </div>
@@ -78,7 +78,7 @@
 <div class="container py-2">
 <h4>Your cart is empty...</h4>
 <br>
-<a type="button" class="btn btn-primary" href="{% url "home" %}">But you can fix it quickly!</a>
+<a type="button" class="btn btn-light border-dark" href="{% url "home" %}">But you can fix it quickly!</a>
 </div>
 {% endif %}
 
