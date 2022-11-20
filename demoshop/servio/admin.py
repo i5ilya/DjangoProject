@@ -13,16 +13,15 @@ class ServioAdmin(admin.ModelAdmin):
 
     @admin.action(description='Sync menu Servio')
     def servio_sync(self, request, queryset):
-        updated = 0
+        #updated = 0
         for obj in queryset:
             con = Connection(obj.id)
-
-            updated += 1
+            #updated += 1
             auth_answer = con.auth()
             if auth_answer:
                 messages.error(request, auth_answer)
             tarifitems_answer = con.get_tarifitems()
-            if tarifitems_answer:
+            if type(tarifitems_answer) != list:
                 messages.error(request, tarifitems_answer)
             else:
                 sync = Syncing(obj.id)

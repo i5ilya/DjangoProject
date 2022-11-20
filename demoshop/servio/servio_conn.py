@@ -68,6 +68,7 @@ class Connection():
                 if data_response.get('Success') is not None:  # Если в словаре есть ключ
                     if not data_response['Success']:  # Если этот ключ не True
                         print(data_response['Error'])
+                        return data_response['Error']
             if response.status_code == 200:
                 return data_response['Items']
         except Exception as error:
