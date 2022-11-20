@@ -24,7 +24,6 @@
                   <p class="fw-bolder card-text mb-1 card-title align-self-start">{{ product.name | title }}</p>
                   {% comment %} <h5 class="fw-bolder">{{ product.name | title }}</h5> {% endcomment %}
                   <!-- Product reviews-->
-                  
                   <div class="d-flex justify-content-center small text-warning mb-2">
                     <div class="bi-star-fill"></div>
                     <div class="bi-star-fill"></div>
@@ -35,7 +34,6 @@
                   <!-- Product price-->
                   <!-- <span class="text-muted text-decoration-line-through">$20.00</span> -->
                   ₴{{ product.price }}
-                
                 </div>
               </div>
               <!-- Product actions-->
@@ -44,7 +42,13 @@
                   <div class="row justify-content-around">
                     <div class="col p-1 col-auto align-self-center">
                       <div class="text-center">
-                        <a class="btn btn-outline-dark mt-auto m-1" href="#">Add To Cart</a>
+                        <button type="button" onclick="this.blur(); add_and_update_cart({{ product.id }})"
+                                id="{{ product.id }}"
+                                value="{{ product.id }}"
+                                class="btn btn-outline-dark mt-auto m-1"
+                                >
+                          Add To Cart
+                        </button>
                       </div>
                     </div>
                     <div class="col p-1 col-auto align-self-center">
@@ -62,4 +66,9 @@
       </div>
     </div>
   </section>
+  
+  <script>
+    var csrf = "{{ csrf_token }}"
+</script>
+  
 {% endblock content %}
