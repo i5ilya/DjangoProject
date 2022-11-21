@@ -19,6 +19,7 @@ from django.core.management import BaseCommand
 
 from abc import ABC
 
+
 class Connection():
     def __init__(self, s_id):
         self.servio = Servio.objects.get(id=s_id)
@@ -35,6 +36,15 @@ class Connection():
         self.url_tarifitems = self.url_main + '/Get_TarifItems'
         self.url_tarifitem = self.url_main + '/Get_TarifItem'
         self.headers = {"accesstoken": self.token}
+
+    def url_ok(self, url):
+        try:
+            r = requests.head(url)
+            return r.status_code
+        except Exception as error:
+            print(f"The error '{error}' occurred")
+            return error
+
 
     def auth(self):
         if self.token_valid < timezone.now():
@@ -74,6 +84,7 @@ class Connection():
         except Exception as error:
             print(f"The error {error} occurred")
             return error
+
     def get_tarifitem(self):
         self.auth()
         try:
@@ -88,6 +99,8 @@ class Connection():
         except Exception as error:
             print(f"The error {error} occurred")
             return error
+
+
 class Syncing(Connection):
     def __init__(self, s_id):
         super().__init__(s_id)
@@ -116,6 +129,7 @@ class Syncing(Connection):
             return False
         except Exception as error:
             print(f"The error '{error}' occurred")
+
     def fix_tree(self):
         Folder.objects.get(id=self.root_folder_id_in_servio[0]).fix_tree()
 
@@ -202,6 +216,7 @@ class Syncing(Connection):
 
         except Exception as error:
             print(f"The error '{error}' occurred")
+
     def delete_products(self, products_ids: set):
         '''
         products_ids - set of ids.
@@ -226,6 +241,7 @@ class Syncing(Connection):
             command.delete_files()
         except Exception as error:
             print(f"The error '{error}' occurred")
+
 
 class Command(BaseCommand, ABC):
     def __init__(self):
@@ -281,7 +297,7 @@ if __name__ == '__main__':
     #     print(item['Price'])
     #     print(item['PhotoUrl'])
 
-    #sync = Syncing(1)
+    # sync = Syncing(1)
 
     # print(f'Токен валидный до  {timezone.localtime(sync.token_valid)}')
     # sync.sync_folders()
@@ -293,11 +309,11 @@ if __name__ == '__main__':
     # Folder.objects.get(id=4626).fix_tree()
     # new_node = Folder(name='root2')
     # Folder.objects.get(id=1).add_sibling('sorted-sibling', instance=new_node)
-    #sync.sync_folders()
-    #sync.sync_products()
-    #sync.find_deleted_servio_products_ids()
+    # sync.sync_folders()
+    # sync.sync_products()
+    # sync.find_deleted_servio_products_ids()
     # cleanup.refresh(Product.objects.get(id=7247))
-    #command = Command()
-    #print(command.get_files_db())
-    #print(command.get_files_fs())
-    #command.delete_files()
+    # command = Command()
+    # print(command.get_files_db())
+    # print(command.get_files_fs())
+    # command.delete_files()

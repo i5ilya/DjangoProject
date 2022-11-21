@@ -16,20 +16,25 @@ class ServioAdmin(admin.ModelAdmin):
         #updated = 0
         for obj in queryset:
             con = Connection(obj.id)
-            #updated += 1
-            auth_answer = con.auth()
-            if auth_answer:
-                messages.error(request, auth_answer)
-            tarifitems_answer = con.get_tarifitems()
-            if type(tarifitems_answer) != list:
-                messages.error(request, tarifitems_answer)
+            status = con.url_ok(con.url_main)
+            if status == 200:
+                auth_answer = con.auth()
+                if auth_answer:
+                    messages.error(request, auth_answer)
+                tarifitems_answer = con.get_tarifitems()
+                if type(tarifitems_answer) != list:
+                    messages.error(request, tarifitems_answer)
+                else:
+                    sync = Syncing(obj.id)
+                    sync.sync_folders()
+                    sync.sync_products()
+                    # self.message_user(request, ngettext(
+                    # '%d Sync was successfully completed.',
+                    # '%d Sync was successfully completed.',
+                    # updated,
+                    # ) % updated)
+                    messages.success(request, 'Sync was successfully completed')
             else:
-                sync = Syncing(obj.id)
-                sync.sync_folders()
-                sync.sync_products()
-                # self.message_user(request, ngettext(
-                # '%d Sync was successfully completed.',
-                # '%d Sync was successfully completed.',
-                # updated,
-                # ) % updated)
-                messages.success(request, 'Sync was successfully completed')
+                messages.error(request, status)
+            #updated += 1
+
