@@ -23,6 +23,7 @@ function add_and_update_cart(item_id) {
               //console.log(response.cart_len);
               document.getElementById('cart_len').innerHTML = response.cart_len;
               document.getElementById('cart_sum').innerHTML = response.cart_sum;
+              alert("Thank you, the item has been added to the cart");
           });
       } else {
           throw Error('Something went wrong');
