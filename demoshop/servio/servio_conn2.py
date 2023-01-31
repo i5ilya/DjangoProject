@@ -9,7 +9,7 @@ import django
 django.setup()
 
 # need and working with django native
-from servio.models import Servio
+from servio.models import Servio_pos_server
 from django.utils import timezone
 import requests
 from django.utils.datetime_safe import datetime
@@ -25,7 +25,7 @@ from abc import ABC
 
 class Connection:
     def __init__(self, s_id):
-        self.servio = Servio.objects.get(id=s_id)
+        self.servio = Servio_pos_server.objects.get(id=s_id)
         self.url_main = self.servio.url_main
         self.cardcode = self.servio.cardcode
         self.termid = self.servio.termid

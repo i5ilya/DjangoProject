@@ -5,7 +5,7 @@ from django.utils import timezone
 # Create your models here.
 
 
-class Servio(models.Model):
+class Servio_pos_server(models.Model):
     url_main = models.CharField(max_length=100, db_index=True)
     cardcode = models.CharField(max_length=100, db_index=True)
     termid = models.CharField(max_length=100, db_index=True)
@@ -17,11 +17,11 @@ class Servio(models.Model):
         ''' On save new model, write token_valid '''
         if not self.id:
             self.token_valid = timezone.now()
-        return super(Servio, self).save(*args, **kwargs)
+        return super(Servio_pos_server, self).save(*args, **kwargs)
 
     class Meta:
-        verbose_name = 'Servio'
-        verbose_name_plural = 'Servio'
+        verbose_name = 'Servio POS Server'
+        verbose_name_plural = 'Servio POS Server'
 
     def __str__(self):
-        return f'servio {self.id}'
+        return f'servio_pos_server {self.id}'
